@@ -1,0 +1,69 @@
+/* Charts.css */
+
+.charts-container {
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7f5f2;
+  min-height: 100vh;
+  color: #333;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  color: #2d2d2d;
+}
+
+.chart-section {
+  background-color: #fff;
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.07);
+  margin-bottom: 2rem;
+}
+
+.chart-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: #4a4a4a;
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 300px;
+}
+
+.timestamp-label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.axis-label {
+  font-size: 0.85rem;
+  fill: #888;
+}
+
+.recharts-default-tooltip {
+  background-color: #fff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.recharts-tooltip-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.recharts-tooltip-item {
+  color: #444;
+}
+
+@media (max-width: 768px) {
+  .chart-wrapper {
+    height: 250px;
+  }
+}

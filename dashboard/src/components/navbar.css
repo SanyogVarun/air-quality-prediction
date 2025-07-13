@@ -1,0 +1,30 @@
+/* File: src/components/Navbar.css */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f5f5f5; /* neutral nude tone */
+  padding: 12px 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.navbar-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.navbar-links a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #666;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.navbar-links a.active {
+  color: #000;
+  background-color: #e0e0e0;
+}

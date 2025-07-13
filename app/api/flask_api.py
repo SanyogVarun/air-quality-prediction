@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify, Response
+from flask_cors import CORS  # ✅ Import CORS
 import joblib
 import os
 import pandas as pd
 
 app = Flask(__name__)
+CORS(app)  # ✅ Enable CORS for all routes
 
 # Paths
 BASE = os.path.dirname(__file__)
