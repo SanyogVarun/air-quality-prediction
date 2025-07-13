@@ -3,12 +3,12 @@ venv/
 .venv/
 
 # Python compiled files
-__pycache__/
-*.pyc
+#__pycache__/
+#*.pyc
 
 # Data and outputs
-*.csv
-*.png
+#*.csv
+#*.png
 
 # IDE and system files
 .vscode/
