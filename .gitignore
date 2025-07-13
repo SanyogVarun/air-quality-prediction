@@ -1,0 +1,15 @@
+# Virtual environments
+venv/
+.venv/
+
+# Python compiled files
+__pycache__/
+*.pyc
+
+# Data and outputs
+*.csv
+*.png
+
+# IDE and system files
+.vscode/
+.DS_Store
