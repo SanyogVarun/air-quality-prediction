@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
 import Charts from "./pages/Charts";
+import PowerBI from "./pages/PowerBI";
 
 
 function App() {

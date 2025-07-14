@@ -7,7 +7,7 @@ function App() {
   const [pm10Filter, setPm10Filter] = useState('All');
 
   useEffect(() => {
-    fetch('http://localhost:5000/forecast')
+    fetch(`${process.env.REACT_APP_API_URL}/forecast`)
       .then((res) => res.json())
       .then((result) => setData(result))
       .catch((err) => console.error('Error fetching data:', err));

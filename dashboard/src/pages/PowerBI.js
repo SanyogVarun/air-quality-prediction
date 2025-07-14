@@ -13,7 +13,6 @@ const PowerBI = () => {
           width="100%"
           height="600px"
           src="https://app.powerbi.com/view?r=YOUR_EMBED_URL"
-          frameBorder="0"
           allowFullScreen
         ></iframe>
       </div>
