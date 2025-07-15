@@ -25,6 +25,10 @@ weather = pd.read_csv(WEATHER_PATH)
 weather["datetime"] = pd.to_datetime(weather["datetime"])
 df["datetime"] = pd.to_datetime(df["datetime"])
 
+# Ensure datetime columns are timezone-naive (removes UTC)
+df["datetime"] = pd.to_datetime(df["datetime"]).dt.tz_localize(None)
+weather["datetime"] = pd.to_datetime(weather["datetime"]).dt.tz_localize(None)
+
 # Merge weather features
 df = pd.merge_asof(df.sort_values("datetime"), weather.sort_values("datetime"), on="datetime", direction="nearest")
 df.dropna(inplace=True)
@@ -42,6 +46,7 @@ features = ["co", "no2", "o3", "so2", "nh3", "temperature", "humidity", "wind_sp
 X_pm25 = df[features]
 y_pm25 = df["pm2_5"]
 X_train_p25, X_test_p25, y_train_p25, y_test_p25 = train_test_split(X_pm25, y_pm25, test_size=0.2, random_state=42)
+datetime_test_pm25 = df.loc[y_test_p25.index, "datetime"]
 
 model_pm25 = RandomForestRegressor(n_estimators=100, random_state=42)
 model_pm25.fit(X_train_p25, y_train_p25)
@@ -68,25 +73,31 @@ def categorize_pm25(pm25):
 
 # Save PM2.5 model & results
 joblib.dump(model_pm25, os.path.join(MODEL_DIR, "rf_regressor_pm25.pkl"))
-df_pm25 = pd.DataFrame({"Actual_PM2.5": y_test_p25.values, "Predicted_PM2.5": y_pred_p25})
+df_pm25 = pd.DataFrame({"Datetime": datetime_test_pm25.values, "Actual_PM2.5": y_test_p25.values, "Predicted_PM2.5": y_pred_p25})
 df_pm25["Category"] = df_pm25["Predicted_PM2.5"].apply(categorize_pm25)
 df_pm25.to_csv(PREDICTIONS_PATH_PM25, index=False)
 
-# Plot PM2.5 for last 24 hours
-df_recent_pm25 = df.tail(24)
-y_recent_pm25 = model_pm25.predict(df_recent_pm25[features])
+from matplotlib.dates import DateFormatter
+
+# === PM2.5: Last 24 hours prediction using the trained model ===
+df_24h_pm25 = df.sort_values("datetime").tail(24).copy()
+y_24h_actual_pm25 = df_24h_pm25["pm2_5"]
+y_24h_pred_pm25 = model_pm25.predict(df_24h_pm25[features])
 
 plt.figure(figsize=(10, 5))
-plt.plot(df_recent_pm25["datetime"], df_recent_pm25["pm2_5"], label="Actual PM2.5", marker="o")
-plt.plot(df_recent_pm25["datetime"], y_recent_pm25, label="Predicted PM2.5", marker="x")
-plt.title("PM2.5 Prediction (Last 24 Hours)")
+plt.plot(df_24h_pm25["datetime"], y_24h_actual_pm25, label="Actual PM2.5", marker='o')
+plt.plot(df_24h_pm25["datetime"], y_24h_pred_pm25, label="Predicted PM2.5", marker='x')
+plt.title("PM2.5: Actual vs Predicted (Last 24 Hours)")
 plt.xlabel("Datetime")
-plt.ylabel("PM2.5 Concentration")
-plt.legend()
+plt.ylabel("PM2.5 (µg/m³)")
+plt.xticks(rotation=45)
+plt.gca().xaxis.set_major_formatter(DateFormatter("%a, %d %b\n%I:%M %p"))
 plt.grid(True)
+plt.legend()
 plt.tight_layout()
-plt.savefig(os.path.join(PLOT_DIR, "rf_pm25_predictions_24hr.png"))
+plt.savefig(os.path.join(PLOT_DIR, "rf_pm25_predictions.png"))
 plt.close()
+
 
 ##############################
 # ===== PM10 Prediction =====
@@ -94,6 +105,7 @@ plt.close()
 X_pm10 = df[features]
 y_pm10 = df["pm10"]
 X_train_p10, X_test_p10, y_train_p10, y_test_p10 = train_test_split(X_pm10, y_pm10, test_size=0.2, random_state=42)
+datetime_test_pm10 = df.loc[y_test_p10.index, "datetime"]
 
 model_pm10 = RandomForestRegressor(n_estimators=100, random_state=42)
 model_pm10.fit(X_train_p10, y_train_p10)
@@ -104,7 +116,6 @@ mse_p10 = mean_squared_error(y_test_p10, y_pred_p10)
 cv_scores_p10 = cross_val_score(model_pm10, X_pm10, y_pm10, scoring="r2", cv=KFold(n_splits=5, shuffle=True, random_state=42))
 
 # Classification
-
 def categorize_pm10(pm10):
     if pm10 <= 50:
         return "Good"
@@ -121,24 +132,27 @@ def categorize_pm10(pm10):
 
 # Save PM10 model & results
 joblib.dump(model_pm10, os.path.join(MODEL_DIR, "rf_regressor_pm10.pkl"))
-df_pm10 = pd.DataFrame({"Actual_PM10": y_test_p10.values, "Predicted_PM10": y_pred_p10})
+df_pm10 = pd.DataFrame({"Datetime": datetime_test_pm10.values, "Actual_PM10": y_test_p10.values, "Predicted_PM10": y_pred_p10})
 df_pm10["Category"] = df_pm10["Predicted_PM10"].apply(categorize_pm10)
 df_pm10.to_csv(PREDICTIONS_PATH_PM10, index=False)
 
-# Plot PM10 for last 24 hours
-df_recent_pm10 = df.tail(24)
-y_recent_pm10 = model_pm10.predict(df_recent_pm10[features])
+# === PM10: Last 24 hours prediction using the trained model ===
+df_24h_pm10 = df.sort_values("datetime").tail(24).copy()
+y_24h_actual_pm10 = df_24h_pm10["pm10"]
+y_24h_pred_pm10 = model_pm10.predict(df_24h_pm10[features])
 
 plt.figure(figsize=(10, 5))
-plt.plot(df_recent_pm10["datetime"], df_recent_pm10["pm10"], label="Actual PM10", marker="o")
-plt.plot(df_recent_pm10["datetime"], y_recent_pm10, label="Predicted PM10", marker="x")
-plt.title("PM10 Prediction (Last 24 Hours)")
+plt.plot(df_24h_pm10["datetime"], y_24h_actual_pm10, label="Actual PM10", marker='o')
+plt.plot(df_24h_pm10["datetime"], y_24h_pred_pm10, label="Predicted PM10", marker='x')
+plt.title("PM10: Actual vs Predicted (Last 24 Hours)")
 plt.xlabel("Datetime")
-plt.ylabel("PM10 Concentration")
-plt.legend()
+plt.ylabel("PM10 (µg/m³)")
+plt.xticks(rotation=45)
+plt.gca().xaxis.set_major_formatter(DateFormatter("%a, %d %b\n%I:%M %p"))
 plt.grid(True)
+plt.legend()
 plt.tight_layout()
-plt.savefig(os.path.join(PLOT_DIR, "rf_pm10_predictions_24hr.png"))
+plt.savefig(os.path.join(PLOT_DIR, "rf_pm10_predictions.png"))
 plt.close()
 
 ##############################
