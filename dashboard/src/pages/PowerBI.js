@@ -24,7 +24,7 @@
 
 
 import React from "react";
-import "../styles/PowerBI.css";
+import "../styles/powerbi.css";
 
 const PowerBI = () => {
   return (
