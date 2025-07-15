@@ -1,4 +1,4 @@
-// File: src/pages/PowerBI.js
+// //File: src/pages/PowerBI.js
 
 // import React from "react";
 // import "./powerbi.css";
@@ -21,7 +21,7 @@
 // };
 
 // export default PowerBI;
-//
+
 
 import React from "react";
 import "../styles/PowerBI.css";
