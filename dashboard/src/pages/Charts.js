@@ -30,7 +30,7 @@ const Charts = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/forecast")
+    fetch(`${process.env.REACT_APP_API_URL}/forecast`)
       .then((res) => res.json())
       .then((json) => setData(json))
       .catch((err) => console.error("Failed to load chart data:", err));
